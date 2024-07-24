@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import regex.TextProcessor;
 
 public class TextProcessorController {
 
@@ -18,6 +19,12 @@ public class TextProcessorController {
     private TextField dataInput;
 
     @FXML
+    private TextField regexPattern;
+
+    @FXML
+    private TextField replacementText;
+
+    @FXML
     private ListView<String> dataList;
 
     private ObservableList<String> items;
@@ -29,17 +36,30 @@ public class TextProcessorController {
     }
 
     @FXML
-    private void handleDisplayText() {
-
-        String inputText = inputArea.getText();
-        resultArea.setText(inputText);
+    private void handleMatch() {
+        String text = inputArea.getText();
+        String pattern = regexPattern.getText();
+        boolean isMatch = TextProcessor.matchPattern(text, pattern);
+        resultArea.setText("Match Found: " + isMatch);
     }
+
+    @FXML
+    private void handleReplace() {
+        String text = inputArea.getText();
+        String pattern = regexPattern.getText();
+        String replacement = replacementText.getText();
+        String replacedText = TextProcessor.replaceText(text, pattern, replacement);
+        resultArea.setText("Replaced Text: " + replacedText);
+    }
+
 
     @FXML
     private void handleClearText() {
 
         inputArea.clear();
         resultArea.clear();
+        regexPattern.clear();
+        replacementText.clear();
     }
 
     @FXML
