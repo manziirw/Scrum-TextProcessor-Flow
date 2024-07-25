@@ -2,6 +2,7 @@ package data;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -34,15 +35,12 @@ public class DataCollection {
         return dataList;
     }
 
-    // Setter for the data list
+
     public void setDataList(List<TextData> newDataList) {
         this.dataList = newDataList;
     }
 
-    /**
-     * Saves the current data list to a specified file, overwriting any existing contents.
-     * @param stage The stage to display the file chooser.
-     */
+
     public void saveToFile(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Data");
@@ -50,24 +48,19 @@ public class DataCollection {
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null) {
-            // Overwrite the file with the current data list
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 for (TextData data : dataList) {
                     writer.write(data.getData());
                     writer.newLine();
                 }
+                showAlert("Success", "Data successfully saved to file.");
             } catch (IOException e) {
-                e.printStackTrace();
+                handleException("Error Saving File", "An error occurred while saving the file.", e);
             }
         }
     }
 
-    /**
-     * Loads data from the specified file and populates the data list.
-     * @param stage The stage to display the file chooser.
-     */
     public void loadFromFile(Stage stage) {
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Data File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
@@ -80,9 +73,30 @@ public class DataCollection {
                 while ((line = reader.readLine()) != null) {
                     dataList.add(new TextData(line));
                 }
+                showAlert("Success", "Data successfully loaded from file.");
             } catch (IOException e) {
-                e.printStackTrace();
+                handleException("Error Loading File", "An error occurred while loading the file.", e);
             }
         }
+    }
+
+    private void handleException(String title, String message, Exception e) {
+
+        e.printStackTrace();
+
+        // Show an alert dialog with the error message
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
