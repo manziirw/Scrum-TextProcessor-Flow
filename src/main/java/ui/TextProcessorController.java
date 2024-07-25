@@ -50,8 +50,19 @@ public class TextProcessorController {
     private void handleMatch() {
         String text = inputArea.getText();
         String pattern = regexPattern.getText();
-        boolean isMatch = TextProcessor.matchPattern(text, pattern);
-        resultArea.setText("Match Found: " + isMatch);
+
+        // Check if the text or pattern is empty
+        if (text.isEmpty() || pattern.isEmpty()) {
+            showAlert("Input Error", "Both text and regex pattern must be provided.");
+            return; // Exit the method if there is an error
+        }
+
+        try {
+            boolean isMatch = TextProcessor.matchPattern(text, pattern);
+            resultArea.setText("Match Found: " + isMatch);
+        } catch (Exception e) {
+            showAlert("Error", "An error occurred while matching the pattern: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -59,8 +70,19 @@ public class TextProcessorController {
         String text = inputArea.getText();
         String pattern = regexPattern.getText();
         String replacement = replacementText.getText();
-        String replacedText = TextProcessor.replaceText(text, pattern, replacement);
-        resultArea.setText("Replaced Text: " + replacedText);
+
+        // Check if the text, pattern, or replacement is empty
+        if (text.isEmpty() || pattern.isEmpty() || replacement.isEmpty()) {
+            showAlert("Input Error", "Text, text to be replaced, and replacement text must all be provided.");
+            return; // Exit the method if there is an error
+        }
+
+        try {
+            String replacedText = TextProcessor.replaceText(text, pattern, replacement);
+            resultArea.setText("Replaced Text: " + replacedText);
+        } catch (Exception e) {
+            showAlert("Error", "An error occurred while replacing text: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -75,9 +97,13 @@ public class TextProcessorController {
     private void handleAddData() {
         String data = dataInput.getText();
         if (!data.isEmpty()) {
-            dataCollection.addData(data);
-            updateListView();
-            dataInput.clear();
+            try {
+                dataCollection.addData(data);
+                updateListView();
+                dataInput.clear();
+            } catch (Exception e) {
+                showAlert("Error", "An error occurred while adding data: " + e.getMessage());
+            }
         } else {
             showAlert("Input Error", "Please enter some data to add.");
         }
@@ -89,10 +115,14 @@ public class TextProcessorController {
         String newData = dataInput.getText();
 
         if (selectedData != null && !newData.isEmpty()) {
-            int selectedIndex = dataList.getSelectionModel().getSelectedIndex();
-            dataCollection.updateData(selectedIndex, newData);
-            updateListView();
-            dataInput.clear();
+            try {
+                int selectedIndex = dataList.getSelectionModel().getSelectedIndex();
+                dataCollection.updateData(selectedIndex, newData);
+                updateListView();
+                dataInput.clear();
+            } catch (Exception e) {
+                showAlert("Error", "An error occurred while updating data: " + e.getMessage());
+            }
         } else {
             showAlert("Update Error", "Please select an item and enter new data.");
         }
@@ -102,8 +132,12 @@ public class TextProcessorController {
     private void handleDeleteData() {
         int selectedIndex = dataList.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1) {
-            dataCollection.deleteData(selectedIndex);
-            updateListView();
+            try {
+                dataCollection.deleteData(selectedIndex);
+                updateListView();
+            } catch (Exception e) {
+                showAlert("Error", "An error occurred while deleting data: " + e.getMessage());
+            }
         } else {
             showAlert("Delete Error", "Please select an item to delete.");
         }
@@ -113,21 +147,33 @@ public class TextProcessorController {
     private void handleClearData() {
         dataInput.clear();
         dataList.getSelectionModel().clearSelection();
-        dataCollection.getDataList().clear(); // Clear all data
-        updateListView();
+        try {
+            dataCollection.getDataList().clear();
+            updateListView();
+        } catch (Exception e) {
+            showAlert("Error", "An error occurred while clearing data: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleSaveData() {
         Stage stage = (Stage) dataList.getScene().getWindow();
-        dataCollection.saveToFile(stage);
+        try {
+            dataCollection.saveToFile(stage);
+        } catch (Exception e) {
+            showAlert("Save Error", "An error occurred while saving data: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleLoadData() {
         Stage stage = (Stage) dataList.getScene().getWindow();
-        dataCollection.loadFromFile(stage);
-        updateListView();
+        try {
+            dataCollection.loadFromFile(stage);
+            updateListView();
+        } catch (Exception e) {
+            showAlert("Load Error", "An error occurred while loading data: " + e.getMessage());
+        }
     }
 
     private void updateListView() {
@@ -135,7 +181,7 @@ public class TextProcessorController {
     }
 
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
