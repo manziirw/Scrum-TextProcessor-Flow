@@ -1,11 +1,13 @@
 package ui;
 
-
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import data.DataCollection;
+import data.TextData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import regex.TextProcessor;
+import javafx.stage.Stage;
 
 public class TextProcessorController {
 
@@ -25,14 +27,23 @@ public class TextProcessorController {
     private TextField replacementText;
 
     @FXML
-    private ListView<String> dataList;
+    private ListView<TextData> dataList;
 
-    private ObservableList<String> items;
+    private DataCollection dataCollection;
+    private ObservableList<TextData> items;
 
+    @FXML
     public void initialize() {
-
+        dataCollection = new DataCollection();
         items = FXCollections.observableArrayList();
         dataList.setItems(items);
+
+        // Listen for selection changes
+        dataList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                dataInput.setText(newValue.getData());
+            }
+        });
     }
 
     @FXML
@@ -52,10 +63,8 @@ public class TextProcessorController {
         resultArea.setText("Replaced Text: " + replacedText);
     }
 
-
     @FXML
     private void handleClearText() {
-
         inputArea.clear();
         resultArea.clear();
         regexPattern.clear();
@@ -66,7 +75,8 @@ public class TextProcessorController {
     private void handleAddData() {
         String data = dataInput.getText();
         if (!data.isEmpty()) {
-            items.add(data);
+            dataCollection.addData(data);
+            updateListView();
             dataInput.clear();
         } else {
             showAlert("Input Error", "Please enter some data to add.");
@@ -75,12 +85,13 @@ public class TextProcessorController {
 
     @FXML
     private void handleUpdateData() {
-        String selectedData = dataList.getSelectionModel().getSelectedItem();
+        TextData selectedData = dataList.getSelectionModel().getSelectedItem();
         String newData = dataInput.getText();
 
         if (selectedData != null && !newData.isEmpty()) {
             int selectedIndex = dataList.getSelectionModel().getSelectedIndex();
-            items.set(selectedIndex, newData);
+            dataCollection.updateData(selectedIndex, newData);
+            updateListView();
             dataInput.clear();
         } else {
             showAlert("Update Error", "Please select an item and enter new data.");
@@ -89,9 +100,10 @@ public class TextProcessorController {
 
     @FXML
     private void handleDeleteData() {
-        String selectedData = dataList.getSelectionModel().getSelectedItem();
-        if (selectedData != null) {
-            items.remove(selectedData);
+        int selectedIndex = dataList.getSelectionModel().getSelectedIndex();
+        if (selectedIndex != -1) {
+            dataCollection.deleteData(selectedIndex);
+            updateListView();
         } else {
             showAlert("Delete Error", "Please select an item to delete.");
         }
@@ -101,6 +113,25 @@ public class TextProcessorController {
     private void handleClearData() {
         dataInput.clear();
         dataList.getSelectionModel().clearSelection();
+        dataCollection.getDataList().clear(); // Clear all data
+        updateListView();
+    }
+
+    @FXML
+    private void handleSaveData() {
+        Stage stage = (Stage) dataList.getScene().getWindow();
+        dataCollection.saveToFile(stage);
+    }
+
+    @FXML
+    private void handleLoadData() {
+        Stage stage = (Stage) dataList.getScene().getWindow();
+        dataCollection.loadFromFile(stage);
+        updateListView();
+    }
+
+    private void updateListView() {
+        items.setAll(dataCollection.getDataList());
     }
 
     private void showAlert(String title, String message) {
@@ -111,4 +142,3 @@ public class TextProcessorController {
         alert.showAndWait();
     }
 }
-

@@ -34,4 +34,8 @@ public class TextData {
     public String toString() {
         return data;
     }
+
+    public String getText() {
+        return data;
+    }
 }

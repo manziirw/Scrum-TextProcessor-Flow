@@ -99,6 +99,21 @@
 
     <Label text="Data List:" />
     <ListView fx:id="dataList" prefWidth="300.0" prefHeight="150.0" />
+
+    <!-- HBox for saving and loading files -->
+    <HBox alignment="CENTER" spacing="8">
+        <Button onAction="#handleSaveData" text="Save" style="-fx-background-color: #4CAF50;" textFill="WHITE">
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+        </Button>
+        <Button onAction="#handleLoadData" text="Load" style="-fx-background-color: #FFA500;" textFill="WHITE">
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+        </Button>
+    </HBox>
+
     <padding>
         <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
     </padding>
