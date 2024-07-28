@@ -141,3 +141,6 @@ The UI uses inline CSS for styling to create a visually appealing and consistent
 # 7. Conclusion
 The JavaFX Text Processing Tool offers a robust solution for regex-based text manipulation and data management. With a user-friendly interface, the application is designed for both novice and experienced users looking to perform quick text processing tasks.
 
+Loom video: https://www.loom.com/share/d0ffa9b2eff3464c8199f1e7b164ab49?sid=c1597b2b-3a52-4eca-a79e-3302b0ffc888
+
+
